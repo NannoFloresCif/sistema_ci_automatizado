@@ -26,11 +26,11 @@ jobs:
         run: mvn clean test
 
       - name: Generar reporte HTML Surefire
-        run: mvn surefire-report:report
+        run: mvn site surefire-report:report
 
       - name: Upload reporte de tests
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-report
           path: target/surefire-reports/
@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload reporte HTML
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: surefire-html-report
           path: target/site/surefire-report.html
