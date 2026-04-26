@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Ejecutar pruebas unitarias
+    name: Ejecutar pruebas (Unit + BDD)
     runs-on: ubuntu-latest
 
     steps:
@@ -22,30 +22,36 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Ejecutar tests con Maven
-        run: mvn clean test
+      - name: Ejecutar tests (Unit + BDD)
+        run: mvn test -Dcucumber.filter.tags=@login
 
       - name: Generar reporte HTML Surefire
         run: mvn site surefire-report:report
 
-      - name: Upload reporte de tests
+      - name: Generar reporte Cucumber HTML
+        run: mvn verify -DskipTests
+
+      - name: Upload reportes de tests
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: test-report
-          path: target/surefire-reports/
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/cucumber-reports/
           retention-days: 30
 
-      - name: Upload reporte HTML
+      - name: Upload reporte Cucumber HTML
         if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: surefire-html-report
-          path: target/site/surefire-report.html
+          name: cucumber-html-report
+          path: target/cucumber-reports/cucumber-html-reports/
           retention-days: 30
 
       - name: Mostrar resumen de resultados
         run: |
           echo "=== Resumen de Tests ==="
           ls -la target/surefire-reports/
+          ls -la target/cucumber-reports/
           echo "Archivos de reporte generados exitosamente"
